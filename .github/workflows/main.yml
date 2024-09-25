@@ -1,8 +1,6 @@
 name: Birthday Bot
 
 on:
-#  schedule:
- #  - cron: '*/30 * * * *'  # Runs every 30 minutes
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
@@ -18,14 +16,14 @@ jobs:
       with:
         node-version: '18'  # You can specify any Node.js version you are using
 
-    # Step to restore the WhatsApp session cache
-    - name: Restore WhatsApp session cache
+    # Step to restore the WhatsApp auth and session cache
+    - name: Restore WhatsApp auth and session cache
       uses: actions/cache@v3
       with:
         path: |
           .wwebjs_auth   # Restore the authentication cache
           .wwebjs_cache  # Restore the cache directory
-        key: whatsapp-session-${{ github.ref }}  # Cache key
+        key: whatsapp-session-${{ github.sha }}  # Cache key based on commit SHA
         restore-keys: |
           whatsapp-session-
 
@@ -48,4 +46,4 @@ jobs:
         path: |
           .wwebjs_auth   # Save the authentication cache
           .wwebjs_cache  # Save the cache directory
-        key: whatsapp-session-${{ github.ref }}  # Cache key
+        key: whatsapp-session-${{ github.run_id }}  # Unique cache key for each run
