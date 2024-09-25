@@ -1,6 +1,8 @@
 name: Birthday Bot
 
 on:
+  schedule:
+    - cron: '*/30 * * * *'  # Runs every 30 minutes
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
@@ -14,25 +16,14 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18'  # Specify the Node.js version you are using
-
-    # Step to restore the WhatsApp auth cache
-    - name: Restore WhatsApp auth cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          .wwebjs_auth   # Restore the authentication cache
-        key: whatsapp-auth-${{ github.ref }}  # Cache key for .wwebjs_auth
-        restore-keys: |
-          whatsapp-auth-
+        node-version: '18'  # You can specify any Node.js version you are using
 
     # Step to restore the WhatsApp session cache
     - name: Restore WhatsApp session cache
       uses: actions/cache@v3
       with:
-        path: |
-          .wwebjs_cache  # Restore the session cache
-        key: whatsapp-session-${{ github.ref }}  # Cache key for .wwebjs_cache
+        path: .wwebjs_auth  # Adjust this if your session is stored elsewhere
+        key: whatsapp-session-${{ github.ref }}  # Cache key
         restore-keys: |
           whatsapp-session-
 
@@ -40,7 +31,7 @@ jobs:
       run: npm install
 
     - name: Run the bot
-      run: node bot.js
+      run: node bot1.js
       env:
         AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
         AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
@@ -48,18 +39,9 @@ jobs:
         GROUP_CHAT_ID: ${{ secrets.GROUP_CHAT_ID }}
         ADMIN_NUMBER: ${{ secrets.ADMIN_NUMBER }}
 
-    # Step to save the WhatsApp auth cache after the run
-    - name: Save WhatsApp auth cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          .wwebjs_auth   # Save the authentication cache
-        key: whatsapp-auth-${{ github.ref }}  # Unique cache key for .wwebjs_auth
-
     # Step to save the WhatsApp session cache after the run
     - name: Save WhatsApp session cache
       uses: actions/cache@v3
       with:
-        path: |
-          .wwebjs_cache  # Save the session cache
-        key: whatsapp-session-${{ github.ref }}
+        path: .wwebjs_auth  # Adjust this if your session is stored elsewhere
+        key: whatsapp-session-${{ github.ref }}  # Cache key
