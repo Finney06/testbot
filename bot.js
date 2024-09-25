@@ -1,5 +1,5 @@
 require('dotenv').config();
-// const fetch = require('node-fetch');
+//const fetch = require('node-fetch');
 
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
@@ -29,7 +29,7 @@ client.on('disconnected', (reason) => {
 client.initialize();
 
 const birthdayMessages = require('./birthdayMessages.js');
-const adminNumber = process.env.ADMIN_NUMBER;
+const adminNumber = "2347032613041@c.us";
 
 // Function to fetch Airtable records and send birthday messages
 async function sendBirthdayMessages() {
@@ -70,6 +70,9 @@ async function sendBirthdayMessages() {
         const todayMonth = today.getMonth() + 1;
         const todayDay = today.getDate();
 
+        // Initialize message tracking flag
+        let messagesSent = false;
+
         // Iterate through users to find whose birthday it is
         for (let user of userInput) {
             const dobMonth = user.dateOfBirth.split('-')[1];
@@ -81,6 +84,7 @@ async function sendBirthdayMessages() {
 
             if (parseInt(dobMonth) === todayMonth && parseInt(dobDay) === todayDay) {
                 console.log(`Today is ${user.name}'s birthday!`);
+                messagesSent = true;  // Set to true when a message is being sent
 
                 // Select a random message from the external birthday messages array
                 const randomMessage = birthdayMessages[Math.floor(Math.random() * birthdayMessages.length)];
@@ -115,10 +119,16 @@ async function sendBirthdayMessages() {
             }
         }
 
-         // Disconnect the client after sending the messages
-         console.log('All birthday messages have been sent. Disconnecting client...');
-         await client.destroy();  // Cleanly disconnect the client
- 
+        if (!messagesSent) {
+            console.log('No birthdays today.');
+        } else {
+            console.log('All messages sent.');
+        }
+
+        // Ensure the process exits after sending all messages
+        console.log('Exiting process...');
+        process.exit(0);
+        
     } catch (error) {
         console.error('Error:', error);
     }
@@ -148,8 +158,3 @@ async function sendMessage(targetNumber, message, mentions = []) {
             //  await client.sendMessage(adminNumber, `Failed to send birthday message to ${userName}. Error: ${error.message}`);
     }
 }
-
-// sendBirthdayMessages()
-
-
-//module.exports = { sendBirthdayMessages };
