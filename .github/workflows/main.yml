@@ -59,7 +59,7 @@ jobs:
     # Step to save the WhatsApp session cache after the run
     - name: Save WhatsApp session cache
       uses: actions/cache@v3
-       with:
+      with:
         path: |
           .wwebjs_cache  # Save the session cache
         key: whatsapp-session-${{ github.ref }}
