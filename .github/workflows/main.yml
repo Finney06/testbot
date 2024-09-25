@@ -1,8 +1,8 @@
 name: Birthday Bot
 
 on:
-  schedule:
-    - cron: '*/30 * * * *'  # Runs every 30 minutes
+ # schedule:
+ #   - cron: '*/30 * * * *'  # Runs every 30 minutes
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
       run: npm install
 
     - name: Run the bot
-      run: node bot1.js
+      run: node bot.js
       env:
         AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
         AIRTABLE_BASE_ID: ${{ secrets.AIRTABLE_BASE_ID }}
