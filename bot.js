@@ -1,6 +1,5 @@
 require('dotenv').config();
-//import fetch from 'node-fetch';
-
+//const fetch = require('node-fetch');
 
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
@@ -30,15 +29,15 @@ client.on('disconnected', (reason) => {
 client.initialize();
 
 const birthdayMessages = require('./birthdayMessages.js');
-const adminNumber = process.env.ADMIN_NUMBER;
-console.log(adminNumber)
+const adminNumber = "2347032613041@c.us";
+
 // Function to fetch Airtable records and send birthday messages
 async function sendBirthdayMessages() {
     try {
         const airtableApiKey = process.env.AIRTABLE_API_KEY; 
         const baseId = process.env.AIRTABLE_BASE_ID; 
         const tableName = process.env.AIRTABLE_TABLE_ID; 
-        const groupNumber = process.env.GROUP_CHAT_ID;
+        const groupNumber = "2347032613041@c.us";
         const apiUrl = `https://api.airtable.com/v0/${baseId}/${tableName}`;
 
         const response = await fetch(apiUrl, {
@@ -82,7 +81,7 @@ async function sendBirthdayMessages() {
             const picture = user.picture;
             const nickname = user.nickname;
             const userName = user.name; 
-console.log(whatsappNumber)
+
             if (parseInt(dobMonth) === todayMonth && parseInt(dobDay) === todayDay) {
                 console.log(`Today is ${user.name}'s birthday!`);
                 messagesSent = true;  // Set to true when a message is being sent
