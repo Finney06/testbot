@@ -63,6 +63,3 @@ jobs:
         path: |
           .wwebjs_cache  # Save the session cache
         key: whatsapp-session-${{ github.ref }}
-        path: |
-          .wwebjs_cache  # Save the session cache
-        key: whatsapp-session-${{ github.run_id }}  # Unique cache key for .wwebjs_cache
