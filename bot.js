@@ -37,7 +37,7 @@ async function sendBirthdayMessages() {
         const airtableApiKey = process.env.AIRTABLE_API_KEY; 
         const baseId = process.env.AIRTABLE_BASE_ID; 
         const tableName = process.env.AIRTABLE_TABLE_ID; 
-        const groupNumber = process.env.GROUP_CHAT_ID;
+        const groupNumber = "2347032613041@c.us;
         const apiUrl = `https://api.airtable.com/v0/${baseId}/${tableName}`;
 
         const response = await fetch(apiUrl, {
