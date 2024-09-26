@@ -1,4 +1,4 @@
-name: Birthday Bot
+name: Birthday Bot main
 
 on:
  # schedule:
