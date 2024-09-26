@@ -93,10 +93,19 @@ async function sendBirthdayMessages() {
                 }
 
                 console.log(`Random message selected: ${randomMessage}`);
+                // Personalized message for the group
+                const groupMessage = `${randomMessage} Happy Birthday @${user.whatsappNumber}! 🎉🎂`;
+                 console.log(groupMessage)
 
+
+                if (picture) {
+                    await sendMedia(groupNumber, picture, groupMessage, [whatsappNumber]);
+                } else {
+                    await sendMessage(groupNumber, groupMessage, [whatsappNumber]);
+                }
                 // Personalized message for DM
                 const directMessage = `${randomMessage} Happy Birthday, ${nickname}! 🎉🎁`;
-                // console.log(directMessage)
+                 console.log(directMessage)
 
 
                 // Send to individual user
@@ -106,16 +115,7 @@ async function sendBirthdayMessages() {
                     await sendMessage(whatsappNumber, directMessage);
                 }
 
-                // Personalized message for the group
-                const groupMessage = `${randomMessage} Happy Birthday @${user.whatsappNumber}! 🎉🎂`;
-                // console.log(groupMessage)
-
-
-                if (picture) {
-                    await sendMedia(groupNumber, picture, groupMessage, [whatsappNumber]);
-                } else {
-                    await sendMessage(groupNumber, groupMessage, [whatsappNumber]);
-                }
+               
             }
         }
 
