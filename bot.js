@@ -1,8 +1,6 @@
-// import fetch from 'node-fetch'
 require('dotenv').config();
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-// const fs = require('fs');
 const birthdayMessages = require('./birthdayMessages');
 
 const client = new Client({
@@ -13,14 +11,15 @@ client.on('qr', (qr) => {
     qrcode.generate(qr, { small: true });
 });
 
-client.on('ready', () => {
+client.on('ready', async () => {
     console.log('Client is ready!');
-    sendBirthdayMessages();
+   sendBirthdayMessages();  // Ensure we wait for sendBirthdayMessages to complete
 });
 
 // Event: Disconnected
 client.on('disconnected', (reason) => {
     console.log('Disconnected:', reason);
+    process.exit(1);  // Exit with error code 1 if disconnected
 });
 
 // Start the WhatsApp client
@@ -29,9 +28,9 @@ client.initialize();
 // Function to fetch Airtable records and send birthday messages
 async function sendBirthdayMessages() {
     try {
-        const airtableApiKey = process.env.AIRTABLE_API_KEY; 
-        const baseId = process.env.AIRTABLE_BASE_ID; 
-        const tableName = process.env.AIRTABLE_TABLE_ID; 
+        const airtableApiKey = process.env.AIRTABLE_API_KEY;
+        const baseId = process.env.AIRTABLE_BASE_ID;
+        const tableName = process.env.AIRTABLE_TABLE_ID;
         const groupNumber = process.env.GROUP_CHAT_ID;
         const apiUrl = `https://api.airtable.com/v0/${baseId}/${tableName}`;
 
@@ -63,6 +62,9 @@ async function sendBirthdayMessages() {
         const todayMonth = today.getMonth() + 1;
         const todayDay = today.getDate();
 
+        // Create an array to store all message promises
+        const messagePromises = [];
+
         // Iterate through users to find whose birthday it is
         for (let user of userInput) {
             const dobMonth = user.dateOfBirth.split('-')[1];
@@ -82,22 +84,34 @@ async function sendBirthdayMessages() {
 
                 // Send to individual user
                 if (picture) {
-                    await sendMedia(whatsappNumber, picture, directMessage);
+                    messagePromises.push(sendMedia(whatsappNumber, picture, directMessage));
                 } else {
-                    await sendMessage(whatsappNumber, directMessage);
+                    messagePromises.push(sendMessage(whatsappNumber, directMessage));
                 }
 
                 // Personalized message for the group
                 const groupMessage = `${randomMessage} Happy Birthday @${user.whatsappNumber}! 🎉🎂`;
 
-
                 if (picture) {
-                    await sendMedia(groupNumber, picture, groupMessage, [whatsappNumber]);
+                    messagePromises.push(sendMedia(groupNumber, picture, groupMessage, [whatsappNumber]));
                 } else {
-                    await sendMessage(groupNumber, groupMessage, [whatsappNumber]);
+                    messagePromises.push(sendMessage(groupNumber, groupMessage, [whatsappNumber]));
                 }
             }
         }
+
+        // Wait for all message-sending promises to resolve
+        await Promise.all(messagePromises);
+
+        // After all messages are sent, log success
+        console.log('All messages sent successfully.');
+
+        // End the WhatsApp client after a delay to ensure all messages are fully processed
+        setTimeout(() => {
+            console.log('Shutting down the client...');
+            client.destroy();
+        }, 5000);  // 5-second delay before destroying the client
+
     } catch (error) {
         console.error('Error:', error);
     }
