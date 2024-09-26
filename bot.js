@@ -29,7 +29,7 @@ client.on('disconnected', (reason) => {
 client.initialize();
 
 const birthdayMessages = require('./birthdayMessages.js');
-const adminNumber = "2347032613041@c.us";
+const adminNumber = process.env.ADMIN_NUMBER;
 
 // Function to fetch Airtable records and send birthday messages
 async function sendBirthdayMessages() {
@@ -37,7 +37,7 @@ async function sendBirthdayMessages() {
         const airtableApiKey = process.env.AIRTABLE_API_KEY; 
         const baseId = process.env.AIRTABLE_BASE_ID; 
         const tableName = process.env.AIRTABLE_TABLE_ID; 
-        const groupNumber = process.env.GROUP_CHAT_ID;
+        const groupNumber =  process.env.GROUP_CHAT_ID;
         const apiUrl = `https://api.airtable.com/v0/${baseId}/${tableName}`;
 
         const response = await fetch(apiUrl, {
@@ -80,7 +80,7 @@ async function sendBirthdayMessages() {
             const whatsappNumber = `${user.whatsappNumber}@c.us`;  // Create user's WhatsApp ID
             const picture = user.picture;
             const nickname = user.nickname;
-            const userName = user.name; 
+            // const userName = user.name; 
 
             if (parseInt(dobMonth) === todayMonth && parseInt(dobDay) === todayDay) {
                 console.log(`Today is ${user.name}'s birthday!`);
@@ -93,19 +93,10 @@ async function sendBirthdayMessages() {
                 }
 
                 console.log(`Random message selected: ${randomMessage}`);
-                // Personalized message for the group
-                const groupMessage = `${randomMessage} Happy Birthday @${user.whatsappNumber}! 🎉🎂`;
-                 console.log(groupMessage)
 
-
-                if (picture) {
-                    await sendMedia(groupNumber, picture, groupMessage, [whatsappNumber]);
-                } else {
-                    await sendMessage(groupNumber, groupMessage, [whatsappNumber]);
-                }
                 // Personalized message for DM
                 const directMessage = `${randomMessage} Happy Birthday, ${nickname}! 🎉🎁`;
-                 console.log(directMessage)
+                // console.log(directMessage)
 
 
                 // Send to individual user
@@ -115,7 +106,16 @@ async function sendBirthdayMessages() {
                     await sendMessage(whatsappNumber, directMessage);
                 }
 
-               
+                // Personalized message for the group
+                const groupMessage = `${randomMessage} Happy Birthday @${user.whatsappNumber}! 🎉🎂`;
+                // console.log(groupMessage)
+
+
+                if (picture) {
+                    await sendMedia(groupNumber, picture, groupMessage, [whatsappNumber]);
+                } else {
+                    await sendMessage(groupNumber, groupMessage, [whatsappNumber]);
+                }
             }
         }
 
