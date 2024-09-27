@@ -18,19 +18,21 @@ jobs:
 
     # Step to restore the WhatsApp auth cache
     - name: Restore WhatsApp auth cache
+      id: auth-cache-restore
       uses: actions/cache@v3
       with:
         path: .wwebjs_auth  # Path to the auth session
-        key: whatsapp-auth-${{ github.sha }}  # Unique cache key for auth session
+        key: whatsapp-auth-${{ github.ref }}  # Cache key based on branch/ref
         restore-keys: |
           whatsapp-auth-
 
     # Step to restore the WhatsApp session cache
     - name: Restore WhatsApp session cache
+      id: session-cache-restore
       uses: actions/cache@v3
       with:
         path: .wwebjs_cache  # Path to the session cache
-        key: whatsapp-session-${{ github.sha }}  # Unique cache key for session cache
+        key: whatsapp-session-${{ github.ref }}  # Cache key based on branch/ref
         restore-keys: |
           whatsapp-session-
 
@@ -46,19 +48,21 @@ jobs:
         GROUP_CHAT_ID: ${{ secrets.GROUP_CHAT_ID }}
         ADMIN_NUMBER: ${{ secrets.ADMIN_NUMBER }}
 
-    # Step to save the WhatsApp auth cache after the run
+    # Step to update the WhatsApp auth cache if changes are made
     - name: Save WhatsApp auth cache
       uses: actions/cache@v3
       with:
         path: .wwebjs_auth  # Path to the auth session
-        key: whatsapp-auth-${{ github.run_id }}  # Unique cache key for auth session
+        key: whatsapp-auth-${{ github.ref }}  # Keep the same cache key to update the existing cache
 
-    # Step to save the WhatsApp session cache after the run
+    # Step to update the WhatsApp session cache if changes are made
     - name: Save WhatsApp session cache
       uses: actions/cache@v3
       with:
         path: .wwebjs_cache  # Path to the session cache
-        key: whatsapp-session-${{ github.run_id }}  # Unique cache key for session cache
+        key: whatsapp-session-${{ github.ref }}  # Keep the same cache key to update the existing cache
+
+    # Optional step: Debugging to check if the cache directories exist
     - name: Check auth cache directory
       run: ls -la .wwebjs_auth || echo "No .wwebjs_auth found"
 
